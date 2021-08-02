@@ -4,24 +4,6 @@
 
     <script>
 
-        function GetAllCommand() {
-            // 异步对象
-            var xhr = new XMLHttpRequest();
-            var url = "/all_commands";
-            xhr.open('get', url);
-
-            xhr.send();
-
-            // 发送并接受返回值
-            xhr.onreadystatechange = function () {
-                // 这步为判断服务器是否正确响应
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var result = document.getElementById("command_result");
-                    result.innerHTML = xhr.responseText;
-                }
-            };
-        }
-
         function SendCommand(name, command) {
             // 异步对象
             var xhr = new XMLHttpRequest();
@@ -43,15 +25,98 @@
             };
         }
 
-        function ClickSendCommand() {
-            SendCommand("test", "adb test");
+        function ClickSendCommand(obj) {
+            var name = obj.innerHTML;
+            var command = obj.nextElementSibling.innerHTML
+
+            alert("ClickSendCommand: " + name + " - " + command);
+            SendCommand(name, command);
         }
+
+        function ShowAllCommand(commands) {
+            var container = document.getElementById("container");
+            for (var i = 0; i < commands.length; i++) {
+                var name = commands[i].name;
+                var command = commands[i].command;
+                var div = document.createElement("div");
+                div.className = "one_item_container";
+                var element_name = document.createElement("button");
+                element_name.className = "command_name";
+                element_name.innerHTML = name;
+                element_name.onclick = function () {
+                    return ClickSendCommand(this);
+                }
+                var element_desc = document.createElement("div");
+                element_desc.className = "command_desc"
+                element_desc.innerHTML = command;
+                div.appendChild(element_name);
+                div.appendChild(element_desc);
+                container.appendChild(div);
+            }
+        }
+
+
+        function GetAllCommand() {
+            // 异步对象
+            var xhr = new XMLHttpRequest();
+            var url = "/all_commands";
+            xhr.open('get', url);
+
+            xhr.send();
+
+            // 发送并接受返回值
+            xhr.onreadystatechange = function () {
+                // 这步为判断服务器是否正确响应
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var result = document.getElementById("command_result");
+                    result.innerHTML = xhr.responseText;
+                    console.log("pds -> " + xhr.responseText);
+                    var commands = JSON.parse(xhr.responseText);
+                    console.log("pds -> " + commands);
+                    ShowAllCommand(commands);
+                }
+            };
+        }
+
+
+
     </script>
+    <style>
+        .command_name {
+            width: 200px;
+            height: 40px;
+            border: 1px solid black;
+            border-radius: 3px;
+            background-color: greenyellow;
+        }
+
+        .command_name:hover {
+            background-color: aqua;
+        }
+
+        .command_desc {
+            width: 200px;
+            height: 80px;
+            border: 1px solid black;
+            border-radius: 3px;
+            background-color: pink;
+            margin-top: 2px;
+        }
+
+        .one_item_container {
+            float: left;
+        }
+    </style>
 </head>
 
 <body>
-    <button onclick="ClickSendCommand()"> send command</button><br />
-    <button onclick="GetAllCommand()"> all command</button><br />
+
+    <button onclick="GetAllCommand()">test</button><br />
+    <div id="container">
+
+    </div>
+
+    <br/>
     <textarea id="command_result" rows="10" cols="20"></textarea>
 </body>
 

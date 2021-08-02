@@ -29,7 +29,7 @@ app.get("/add_command", function (req, res) {
 
 app.get("/all_commands", function (req, res) {
     console.log("all_commands");
-    res.send(all_commands);
+    res.send(JSON.stringify(all_commands));
 })
 
 
